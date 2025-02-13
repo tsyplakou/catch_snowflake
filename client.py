@@ -22,37 +22,36 @@ MOVES = {
 class ClientEngine:
     def __init__(self, stdscr, websocket_uri):
         self._all_players = []
-
         self.websocket_uri = websocket_uri
 
         self.stdscr = stdscr
         self.running = True
         self.player_x = 1
         self.player_y = MAP_HEIGHT - 2
-        self.score = 0
-        self.snowflakes = set()
-        self.current_keys = set()
+        # self.score = 0
+        # self.snowflakes = set()
+        # self.current_keys = set()
 
         # Настройка curses
         curses.curs_set(0)
         self.stdscr.nodelay(True)
         self.stdscr.timeout(30)  # 30ms
 
-        self.generate_snowflakes(1)  # Начальные цели
+        # self.generate_snowflakes(1)  # Начальные цели
 
     def apply_server_updates_for_all_players(self, all_players):
         self.player_x, self.player_y = all_players[0]
         self._other_players = all_players[1:]
         self.draw()
 
-    def generate_snowflakes(self, count=1):
-        """Генерирует `count` объектов (*) в случайных местах карты."""
-        for _ in range(count):
-            while True:
-                x, y = random.randint(1, MAP_WIDTH - 2), random.randint(1, MAP_HEIGHT - 2)
-                if (y, x) not in self.snowflakes and (y, x) != (self.player_y, self.player_x):
-                    self.snowflakes.add((y, x))
-                    break
+    # def generate_snowflakes(self, count=1):
+    #     """Генерирует `count` объектов (*) в случайных местах карты."""
+    #     for _ in range(count):
+    #         while True:
+    #             x, y = random.randint(1, MAP_WIDTH - 2), random.randint(1, MAP_HEIGHT - 2)
+    #             if (y, x) not in self.snowflakes and (y, x) != (self.player_y, self.player_x):
+    #                 self.snowflakes.add((y, x))
+    #                 break
 
     def draw(self):
         """Отрисовка карты в консоли."""
@@ -66,8 +65,8 @@ class ClientEngine:
         self.stdscr.addstr(MAP_HEIGHT - 1, 0, "+" + "-" * (MAP_WIDTH - 2) + "+")
 
         # Объекты
-        for y, x in self.snowflakes:
-            self.stdscr.addch(y, x, "*")
+        # for y, x in self.snowflakes:
+        #     self.stdscr.addch(y, x, "*")
 
         # other players
         for player_coordinates in self._other_players:
@@ -77,7 +76,7 @@ class ClientEngine:
         self.stdscr.addch(self.player_y, self.player_x, "0")
 
         # Счет
-        self.stdscr.addstr(MAP_HEIGHT, 0, f"Score: {self.score}")
+        # self.stdscr.addstr(MAP_HEIGHT, 0, f"Score: {self.score}")
 
         self.stdscr.refresh()
 
@@ -108,7 +107,7 @@ class ClientEngine:
 
     async def _send_message_to_server(self, message):
         """Отправляет сообщение на сервер"""
-        print(f"Sending: {message}")
+        # print(f"Sending: {message}")
         await self.websocket.send(message)
 
     async def receive_messages_from_server(self):

@@ -5,6 +5,8 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 app = FastAPI()
 
+FIELD_SIZE = 20
+
 
 def get_uuid() -> str:
     return str(uuid.uuid4())
@@ -39,14 +41,20 @@ class ConnectionManager:
             await user_data['websocket'].send_json(positions)
 
     def calculate_position(self, prev_position, move):
+        def normalize_position(position):
+            x, y = position
+            return max(0, min(FIELD_SIZE, x)), max(0, min(FIELD_SIZE, y))
+
         if move == 0:
-            return prev_position[0], prev_position[1] + 1
+            position = prev_position[0], prev_position[1] + 1
         elif move == 1:
-            return prev_position[0] + 1, prev_position[1]
+            position = prev_position[0] + 1, prev_position[1]
         elif move == 2:
-            return prev_position[0], prev_position[1] - 1
+            position = prev_position[0], prev_position[1] - 1
         elif move == 3:
-            return prev_position[0] - 1, prev_position[1]
+            position = prev_position[0] - 1, prev_position[1]
+
+        return normalize_position(position)
 
     async def update_player_position(self, _id: str, move):
         try:
